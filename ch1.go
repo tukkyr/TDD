@@ -55,24 +55,24 @@ type Dollar struct {
 	*money
 }
 
-func NewDollar(amount int) Money {
-	m := &money{amount, USD}
+func NewDollar(amount int, currency Kind) Money {
+	m := &money{amount, currency}
 	return &Dollar{m}
 }
 
 func (s *Dollar) Times(mul int) Money {
-	return NewDollar(s.amount * mul)
+	return NewDollar(s.amount*mul, USD)
 }
 
 type Franc struct {
 	*money
 }
 
-func NewFranc(amount int) Money {
-	m := &money{amount, CHF}
+func NewFranc(amount int, currency Kind) Money {
+	m := &money{amount, currency}
 	return &Franc{m}
 }
 
 func (s *Franc) Times(mul int) Money {
-	return NewFranc(s.amount * mul)
+	return NewFranc(s.amount*mul, CHF)
 }

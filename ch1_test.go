@@ -6,13 +6,13 @@ import (
 )
 
 func Test_ドルの積(t *testing.T) {
-	five := NewDollar(5)
+	five := NewDollar(5, USD)
 	tests := []struct {
 		in   int
 		want Money
 	}{
-		{2, NewDollar(10)},
-		{3, NewDollar(15)},
+		{2, NewDollar(10, USD)},
+		{3, NewDollar(15, USD)},
 	}
 
 	for _, tc := range tests {
@@ -26,13 +26,13 @@ func Test_ドルの積(t *testing.T) {
 }
 
 func Test_フランの積(t *testing.T) {
-	five := NewFranc(5)
+	five := NewFranc(5, CHF)
 	tests := []struct {
 		in   int
 		want Money
 	}{
-		{2, NewFranc(10)},
-		{3, NewFranc(15)},
+		{2, NewFranc(10, CHF)},
+		{3, NewFranc(15, CHF)},
 	}
 
 	for _, tc := range tests {
@@ -52,11 +52,11 @@ func Test_Moneyが等しいかどうか調べる(t *testing.T) {
 		in     Money
 		want   bool
 	}{
-		{NewDollar(5), NewDollar(5), true},
-		{NewDollar(5), NewDollar(6), false},
-		{NewFranc(5), NewFranc(5), true},
-		{NewFranc(5), NewFranc(6), false},
-		{NewDollar(5), NewFranc(5), false},
+		{NewDollar(5, USD), NewDollar(5, USD), true},
+		{NewDollar(5, USD), NewDollar(6, USD), false},
+		{NewFranc(5, CHF), NewFranc(5, CHF), true},
+		{NewFranc(5, CHF), NewFranc(6, CHF), false},
+		{NewDollar(5, USD), NewFranc(5, CHF), false},
 	}
 
 	for _, tc := range tests {
@@ -70,7 +70,7 @@ func Test_Moneyが等しいかどうか調べる(t *testing.T) {
 
 func Test_Moneyの種類(t *testing.T) {
 	tests := []struct {
-		factoryMethod func(int) Money
+		factoryMethod func(int, Kind) Money
 		want          Kind
 	}{
 		{NewDollar, USD},
@@ -78,7 +78,7 @@ func Test_Moneyの種類(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("%vで有ることを期待する", tc.want), func(t *testing.T) {
-			if got := tc.factoryMethod(1).currency(); got != tc.want {
+			if got := tc.factoryMethod(1, tc.want).currency(); got != tc.want {
 				t.Errorf("%v != %v", got, tc.want)
 			}
 		})
