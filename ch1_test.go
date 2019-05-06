@@ -6,13 +6,13 @@ import (
 )
 
 func Test_ドルの積(t *testing.T) {
-	five := &Dollar{5}
+	five := NewDollar(5)
 	tests := []struct {
 		in   int
 		want *Dollar
 	}{
-		{2, &Dollar{10}},
-		{3, &Dollar{15}},
+		{2, NewDollar(10)},
+		{3, NewDollar(15)},
 	}
 
 	for _, tc := range tests {
@@ -26,13 +26,13 @@ func Test_ドルの積(t *testing.T) {
 }
 
 func Test_フランの積(t *testing.T) {
-	five := &Franc{5}
+	five := NewFranc(5)
 	tests := []struct {
 		in   int
 		want *Franc
 	}{
-		{2, &Franc{10}},
-		{3, &Franc{15}},
+		{2, NewFranc(10)},
+		{3, NewFranc(15)},
 	}
 
 	for _, tc := range tests {
@@ -45,21 +45,24 @@ func Test_フランの積(t *testing.T) {
 	}
 }
 
-func Test_Dollarが等しいかどうか調べる(t *testing.T) {
-	five := &Dollar{5}
+func Test_Moneyが等しいかどうか調べる(t *testing.T) {
 	message := map[bool]string{true: "等しい", false: "等しくない"}
 	tests := []struct {
-		in   *Dollar
-		want bool
+		target Money
+		in     Money
+		want   bool
 	}{
-		{&Dollar{5}, true},
-		{&Dollar{6}, false},
+		{NewDollar(5), NewDollar(5), true},
+		{NewDollar(5), NewDollar(6), false},
+		{NewFranc(5), NewFranc(5), true},
+		{NewFranc(5), NewFranc(6), false},
+		{NewDollar(5), NewFranc(5), false},
 	}
 
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("%vことを期待する", message[tc.want]), func(t *testing.T) {
-			if got := five.Equals(tc.in); got != tc.want {
-				t.Errorf("%vと%vが%v", five, tc.in, message[!tc.want])
+			if got := tc.target.Equals(tc.in); got != tc.want {
+				t.Errorf("%v(%T)と%v(%T)が%v", tc.target.getAmount(), tc.target, tc.in.getAmount(), tc.in, message[!tc.want])
 			}
 		})
 	}
