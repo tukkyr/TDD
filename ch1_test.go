@@ -9,17 +9,17 @@ func Test_ドルの積(t *testing.T) {
 	five := NewDollar(5)
 	tests := []struct {
 		in   int
-		want *Dollar
+		want Money
 	}{
 		{2, NewDollar(10)},
 		{3, NewDollar(15)},
 	}
 
 	for _, tc := range tests {
-		t.Run(fmt.Sprintf("$%v*%v=$%v", five.amount, tc.in, tc.want.amount), func(t *testing.T) {
+		t.Run(fmt.Sprintf("$%v*%v=$%v", five.getAmount(), tc.in, tc.want.getAmount()), func(t *testing.T) {
 			product := five.Times(tc.in).(*Dollar)
-			if product.amount != tc.want.amount {
-				t.Errorf("$%v is not $%v", product.amount, tc.want.amount)
+			if product.getAmount() != tc.want.getAmount() {
+				t.Errorf("$%v is not $%v", product.getAmount(), tc.want.getAmount())
 			}
 		})
 	}
@@ -29,17 +29,17 @@ func Test_フランの積(t *testing.T) {
 	five := NewFranc(5)
 	tests := []struct {
 		in   int
-		want *Franc
+		want Money
 	}{
 		{2, NewFranc(10)},
 		{3, NewFranc(15)},
 	}
 
 	for _, tc := range tests {
-		t.Run(fmt.Sprintf("$%v*%v=$%v", five.amount, tc.in, tc.want.amount), func(t *testing.T) {
+		t.Run(fmt.Sprintf("$%v*%v=$%v", five.getAmount(), tc.in, tc.want.getAmount()), func(t *testing.T) {
 			product := five.Times(tc.in).(*Franc)
-			if product.amount != tc.want.amount {
-				t.Errorf("$%v is not $%v", product.amount, tc.want.amount)
+			if product.getAmount() != tc.want.getAmount() {
+				t.Errorf("$%v is not $%v", product.getAmount(), tc.want.getAmount())
 			}
 		})
 	}
@@ -60,9 +60,26 @@ func Test_Moneyが等しいかどうか調べる(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		t.Run(fmt.Sprintf("%vことを期待する", message[tc.want]), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%vと%vが%vことを期待する", tc.target, tc.in, message[tc.want]), func(t *testing.T) {
 			if got := tc.target.Equals(tc.in); got != tc.want {
-				t.Errorf("%v(%T)と%v(%T)が%v", tc.target.getAmount(), tc.target, tc.in.getAmount(), tc.in, message[!tc.want])
+				t.Errorf("%vと%vが%v", tc.target, tc.in, message[!tc.want])
+			}
+		})
+	}
+}
+
+func Test_Moneyの種類(t *testing.T) {
+	tests := []struct {
+		factoryMethod func(int) Money
+		want          Kind
+	}{
+		{NewDollar, USD},
+		{NewFranc, CHF},
+	}
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("%vで有ることを期待する", tc.want), func(t *testing.T) {
+			if got := tc.factoryMethod(1).currency(); got != tc.want {
+				t.Errorf("%v != %v", got, tc.want)
 			}
 		})
 	}
