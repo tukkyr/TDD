@@ -1,29 +1,66 @@
 package tdd
 
 import (
-	"os"
+	"fmt"
 	"testing"
 )
 
-var five *Dollar
+func Test_ドルの積(t *testing.T) {
+	five := &Dollar{5}
+	tests := []struct {
+		in   int
+		want *Dollar
+	}{
+		{2, &Dollar{10}},
+		{3, &Dollar{15}},
+	}
 
-func TestMain(m *testing.M) {
-	five = &Dollar{5}
-	os.Exit(m.Run())
-}
-
-func Test_5ドルに2をかけると10ドル(t *testing.T) {
-	ten := &Dollar{10}
-	product := five.Times(2)
-	if product.amount != ten.amount {
-		t.Errorf("$%v is not $%v", five.amount, ten.amount)
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("$%v*%v=$%v", five.amount, tc.in, tc.want.amount), func(t *testing.T) {
+			product := five.Times(tc.in)
+			if product.amount != tc.want.amount {
+				t.Errorf("$%v is not $%v", product.amount, tc.want.amount)
+			}
+		})
 	}
 }
 
-func Test_5ドルに3をかけると15ドル(t *testing.T) {
-	ten := &Dollar{15}
-	product := five.Times(3)
-	if product.amount != ten.amount {
-		t.Errorf("$%v is not $%v", five.amount, ten.amount)
+func Test_フランの積(t *testing.T) {
+	five := &Franc{5}
+	tests := []struct {
+		in   int
+		want *Franc
+	}{
+		{2, &Franc{10}},
+		{3, &Franc{15}},
+	}
+
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("$%v*%v=$%v", five.amount, tc.in, tc.want.amount), func(t *testing.T) {
+			product := five.Times(tc.in)
+			if product.amount != tc.want.amount {
+				t.Errorf("$%v is not $%v", product.amount, tc.want.amount)
+			}
+		})
+	}
+}
+
+func Test_Dollarが等しいかどうか調べる(t *testing.T) {
+	five := &Dollar{5}
+	message := map[bool]string{true: "等しい", false: "等しくない"}
+	tests := []struct {
+		in   *Dollar
+		want bool
+	}{
+		{&Dollar{5}, true},
+		{&Dollar{6}, false},
+	}
+
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("%vことを期待する", message[tc.want]), func(t *testing.T) {
+			if got := five.Equals(tc.in); got != tc.want {
+				t.Errorf("%vと%vが%v", five, tc.in, message[!tc.want])
+			}
+		})
 	}
 }
