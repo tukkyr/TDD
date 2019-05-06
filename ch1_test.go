@@ -5,41 +5,21 @@ import (
 	"testing"
 )
 
-func Test_ドルの積(t *testing.T) {
-	five := NewDollar(5, USD)
+func Test_Moneyの積(t *testing.T) {
 	tests := []struct {
-		in   int
-		want Money
+		target Money
+		in     int
+		want   Money
 	}{
-		{2, NewDollar(10, USD)},
-		{3, NewDollar(15, USD)},
+		{New(5, USD), 2, New(10, USD)},
+		{New(5, USD), 3, New(15, USD)},
 	}
 
 	for _, tc := range tests {
-		t.Run(fmt.Sprintf("$%v*%v=$%v", five.getAmount(), tc.in, tc.want.getAmount()), func(t *testing.T) {
-			product := five.Times(tc.in).(*Dollar)
+		t.Run(fmt.Sprintf("%v*%v=%v", tc.target, tc.in, tc.want), func(t *testing.T) {
+			product := tc.target.Times(tc.in).(*money)
 			if product.getAmount() != tc.want.getAmount() {
-				t.Errorf("$%v is not $%v", product.getAmount(), tc.want.getAmount())
-			}
-		})
-	}
-}
-
-func Test_フランの積(t *testing.T) {
-	five := NewFranc(5, CHF)
-	tests := []struct {
-		in   int
-		want Money
-	}{
-		{2, NewFranc(10, CHF)},
-		{3, NewFranc(15, CHF)},
-	}
-
-	for _, tc := range tests {
-		t.Run(fmt.Sprintf("$%v*%v=$%v", five.getAmount(), tc.in, tc.want.getAmount()), func(t *testing.T) {
-			product := five.Times(tc.in).(*Franc)
-			if product.getAmount() != tc.want.getAmount() {
-				t.Errorf("$%v is not $%v", product.getAmount(), tc.want.getAmount())
+				t.Errorf("%v is not %v", product, tc.want)
 			}
 		})
 	}
@@ -52,11 +32,9 @@ func Test_Moneyが等しいかどうか調べる(t *testing.T) {
 		in     Money
 		want   bool
 	}{
-		{NewDollar(5, USD), NewDollar(5, USD), true},
-		{NewDollar(5, USD), NewDollar(6, USD), false},
-		{NewFranc(5, CHF), NewFranc(5, CHF), true},
-		{NewFranc(5, CHF), NewFranc(6, CHF), false},
-		{NewDollar(5, USD), NewFranc(5, CHF), false},
+		{New(5, USD), New(5, USD), true},
+		{New(5, USD), New(6, USD), false},
+		{New(5, USD), New(5, CHF), false},
 	}
 
 	for _, tc := range tests {
@@ -73,8 +51,8 @@ func Test_Moneyの種類(t *testing.T) {
 		factoryMethod func(int, Kind) Money
 		want          Kind
 	}{
-		{NewDollar, USD},
-		{NewFranc, CHF},
+		{New, USD},
+		{New, CHF},
 	}
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("%vで有ることを期待する", tc.want), func(t *testing.T) {

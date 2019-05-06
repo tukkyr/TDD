@@ -35,44 +35,27 @@ type money struct {
 	kind   Kind
 }
 
-func (s *money) Equals(obj Money) bool {
-	return s.amount == obj.getAmount() && s.kind == obj.currency()
+func (m *money) Equals(obj Money) bool {
+	return m.amount == obj.getAmount() && m.kind == obj.currency()
 }
 
-func (s *money) getAmount() int {
-	return s.amount
+func (m *money) getAmount() int {
+	return m.amount
 }
 
-func (s *money) currency() Kind {
-	return s.kind
+func (m *money) currency() Kind {
+	return m.kind
 }
 
-func (s *money) String() string {
-	return fmt.Sprintf("%v<%v>", s.amount, s.kind)
+func (m *money) String() string {
+	return fmt.Sprintf("%v<%v>", m.amount, m.kind)
 }
 
-type Dollar struct {
-	*money
-}
-
-func NewDollar(amount int, currency Kind) Money {
+func New(amount int, currency Kind) Money {
 	m := &money{amount, currency}
-	return &Dollar{m}
+	return m
 }
 
-func (s *Dollar) Times(mul int) Money {
-	return NewDollar(s.amount*mul, USD)
-}
-
-type Franc struct {
-	*money
-}
-
-func NewFranc(amount int, currency Kind) Money {
-	m := &money{amount, currency}
-	return &Franc{m}
-}
-
-func (s *Franc) Times(mul int) Money {
-	return NewFranc(s.amount*mul, CHF)
+func (m *money) Times(mul int) Money {
+	return New(m.amount*mul, m.kind)
 }

@@ -15,7 +15,7 @@
 - [X] equals() の一般化
   - [X] amountの比較
   - [X] typeの比較 : goで実現するのが難しい 通貨の種類の比較として実装
-- [ ] times() の一般化
+- [X] times() の一般化
 - [X] FrancとDollarを比較する
 - [X] 通貨の概念
 - [ ] Test_フラン積を削除する? 
