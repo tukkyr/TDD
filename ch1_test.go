@@ -17,7 +17,7 @@ func Test_ドルの積(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("$%v*%v=$%v", five.amount, tc.in, tc.want.amount), func(t *testing.T) {
-			product := five.Times(tc.in)
+			product := five.Times(tc.in).(*Dollar)
 			if product.amount != tc.want.amount {
 				t.Errorf("$%v is not $%v", product.amount, tc.want.amount)
 			}
@@ -37,7 +37,7 @@ func Test_フランの積(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("$%v*%v=$%v", five.amount, tc.in, tc.want.amount), func(t *testing.T) {
-			product := five.Times(tc.in)
+			product := five.Times(tc.in).(*Franc)
 			if product.amount != tc.want.amount {
 				t.Errorf("$%v is not $%v", product.amount, tc.want.amount)
 			}
