@@ -25,6 +25,26 @@ func Test_Moneyの積(t *testing.T) {
 	}
 }
 
+func Test_Moneyどうしの足し算(t *testing.T) {
+	tests := []struct {
+		target Money
+		in     Money
+		want   Money
+	}{
+		{New(5, USD), New(5, USD), New(10, USD)},
+	}
+
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("%v+%v=%v", tc.target, tc.in, tc.want), func(t *testing.T) {
+			var sum Expression = tc.target.Plus(tc.in)
+			bank := &Bank{}
+			if got := bank.Reduce(sum, USD); *got.(*money) != *tc.want.(*money) {
+				t.Errorf("%v is not %v", got, tc.want)
+			}
+		})
+	}
+}
+
 func Test_Moneyが等しいかどうか調べる(t *testing.T) {
 	message := map[bool]string{true: "等しい", false: "等しくない"}
 	tests := []struct {

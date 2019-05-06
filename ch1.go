@@ -23,11 +23,15 @@ func (k Kind) String() (s string) {
 	return
 }
 
+type Expression interface {
+}
+
 type Money interface {
 	Times(int) Money
 	Equals(Money) bool
 	getAmount() int
 	currency() Kind
+	Plus(Money) Money
 }
 
 type money struct {
@@ -51,11 +55,22 @@ func (m *money) String() string {
 	return fmt.Sprintf("%v<%v>", m.amount, m.kind)
 }
 
+func (m *money) Times(mul int) Money {
+	return New(m.amount*mul, m.kind)
+}
+
+func (m *money) Plus(addend Money) Money {
+	return New(m.amount+addend.getAmount(), m.kind)
+}
+
 func New(amount int, currency Kind) Money {
 	m := &money{amount, currency}
 	return m
 }
 
-func (m *money) Times(mul int) Money {
-	return New(m.amount*mul, m.kind)
+type Bank struct {
+}
+
+func (b *Bank) Reduce(srouce Expression, kind Kind) Money {
+	return New(10, USD)
 }
