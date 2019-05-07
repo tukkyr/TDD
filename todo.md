@@ -8,3 +8,6 @@
 - [ ] hashCode()
 - [ ] nullとの等価性比較
 - [ ] 他のオブジェクトとの等価性比較
+- [ ] $5 + $5がMoneyを返す
+- [X] Bank.reduce(Money)
+- [ ] Reduce(Bank, String)

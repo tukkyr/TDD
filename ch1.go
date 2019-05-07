@@ -23,7 +23,23 @@ func (k Kind) String() (s string) {
 	return
 }
 
+type Sum struct {
+	augend Money
+	addend Money
+}
+
+func NewSum(augend, addend Money) (s *Sum) {
+	s = &Sum{augend, addend}
+	return
+}
+
+func (s *Sum) reduce(kind Kind) Money {
+	amount := s.augend.getAmount() + s.addend.getAmount()
+	return New(amount, kind)
+}
+
 type Expression interface {
+	reduce(Kind) Money
 }
 
 type Money interface {
@@ -31,7 +47,7 @@ type Money interface {
 	Equals(Money) bool
 	getAmount() int
 	currency() Kind
-	Plus(Money) Money
+	Plus(Money) Expression
 }
 
 type money struct {
@@ -59,8 +75,12 @@ func (m *money) Times(mul int) Money {
 	return New(m.amount*mul, m.kind)
 }
 
-func (m *money) Plus(addend Money) Money {
-	return New(m.amount+addend.getAmount(), m.kind)
+func (m *money) Plus(addend Money) Expression {
+	return NewSum(m, addend)
+}
+
+func (m *money) reduce(kind Kind) Money {
+	return m
 }
 
 func New(amount int, currency Kind) Money {
@@ -71,6 +91,13 @@ func New(amount int, currency Kind) Money {
 type Bank struct {
 }
 
-func (b *Bank) Reduce(srouce Expression, kind Kind) Money {
-	return New(10, USD)
+func (b *Bank) reduce(source Expression, kind Kind) Money {
+	switch v := source.(type) {
+	case *money:
+		return v.reduce(kind)
+	case *Sum:
+		return v.reduce(kind)
+	default:
+		return nil
+	}
 }

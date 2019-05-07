@@ -3,6 +3,8 @@ package tdd
 import (
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_Moneyの積(t *testing.T) {
@@ -36,13 +38,27 @@ func Test_Moneyどうしの足し算(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("%v+%v=%v", tc.target, tc.in, tc.want), func(t *testing.T) {
-			var sum Expression = tc.target.Plus(tc.in)
+			sum := tc.target.Plus(tc.in)
 			bank := &Bank{}
-			if got := bank.Reduce(sum, USD); *got.(*money) != *tc.want.(*money) {
+			if got := bank.reduce(sum, USD); *got.(*money) != *tc.want.(*money) {
 				t.Errorf("%v is not %v", got, tc.want)
 			}
 		})
 	}
+}
+
+func Test_PlusReturnSum(t *testing.T) {
+	five := New(5, USD)
+	result := five.Plus(five)
+	sum := result.(*Sum)
+	assert.Equal(t, *five.(*money), *sum.augend.(*money))
+	assert.Equal(t, *five.(*money), *sum.addend.(*money))
+}
+
+func Test_ReduceMoney(t *testing.T) {
+	bank := &Bank{}
+	result := bank.reduce(New(1, USD).(*money), USD)
+	assert.Equal(t, *New(1, USD).(*money), *result.(*money))
 }
 
 func Test_Moneyが等しいかどうか調べる(t *testing.T) {
