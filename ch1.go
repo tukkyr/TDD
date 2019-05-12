@@ -4,24 +4,12 @@ import (
 	"fmt"
 )
 
-type Kind int
+type Kind string
 
 const (
-	USD = iota
-	CHF
+	USD = "USD"
+	CHF = "CHF"
 )
-
-func (k Kind) String() (s string) {
-	switch k {
-	case USD:
-		s = "USD"
-	case CHF:
-		s = "CHF"
-	default:
-		s = "unknown"
-	}
-	return
-}
 
 type Sum struct {
 	augend Money
@@ -33,13 +21,13 @@ func NewSum(augend, addend Money) (s *Sum) {
 	return
 }
 
-func (s *Sum) reduce(kind Kind) Money {
+func (s *Sum) reduce(bank *Bank, kind Kind) Money {
 	amount := s.augend.getAmount() + s.addend.getAmount()
 	return New(amount, kind)
 }
 
 type Expression interface {
-	reduce(Kind) Money
+	reduce(*Bank, Kind) Money
 }
 
 type Money interface {
@@ -48,6 +36,7 @@ type Money interface {
 	getAmount() int
 	currency() Kind
 	Plus(Money) Expression
+	reduce(*Bank, Kind) Money
 }
 
 type money struct {
@@ -79,8 +68,9 @@ func (m *money) Plus(addend Money) Expression {
 	return NewSum(m, addend)
 }
 
-func (m *money) reduce(kind Kind) Money {
-	return m
+func (m *money) reduce(bank *Bank, kind Kind) Money {
+	rate := bank.rate(m.kind, kind)
+	return New(m.amount/rate, kind)
 }
 
 func New(amount int, currency Kind) Money {
@@ -88,16 +78,37 @@ func New(amount int, currency Kind) Money {
 	return m
 }
 
+type RateMap map[Pair]int
+
 type Bank struct {
+	rates RateMap
+}
+
+func NewBank() (bank *Bank) {
+	bank = &Bank{RateMap{}}
+	bank.addRate(CHF, USD, 2)
+	return
 }
 
 func (b *Bank) reduce(source Expression, kind Kind) Money {
-	switch v := source.(type) {
-	case *money:
-		return v.reduce(kind)
-	case *Sum:
-		return v.reduce(kind)
-	default:
-		return nil
+	return source.reduce(b, kind)
+}
+
+func (b *Bank) addRate(from, to Kind, rate int) {
+	b.rates[Pair{from, to}] = rate
+	return
+}
+
+func (b *Bank) rate(from, to Kind) (rate int) {
+	if from == to {
+		rate = 1
+	} else {
+		rate = b.rates[Pair{from, to}]
 	}
+	return
+}
+
+type Pair struct {
+	from Kind
+	to   Kind
 }
