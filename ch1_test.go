@@ -109,3 +109,36 @@ func Test_Moneyの種類(t *testing.T) {
 		})
 	}
 }
+
+func Test_異なる種類の足し算(t *testing.T) {
+	var fiveBucks, tenFrancs Expression = New(5, USD), New(10, CHF)
+	bank := NewBank()
+	bank.addRate(CHF, USD, 2)
+	result := bank.reduce(fiveBucks.Plus(tenFrancs), "USD")
+	assert.Equal(t, *New(10, USD).(*money), *result.(*money))
+}
+
+func Test_SumPlusMoney(t *testing.T) {
+	var fiveBucks, tenFrancs Expression = New(5, USD), New(10, CHF)
+	bank := NewBank()
+	bank.addRate(CHF, USD, 2)
+	sum := NewSum(fiveBucks, tenFrancs).Plus(New(5, USD))
+	result := bank.reduce(sum, "USD")
+	assert.Equal(t, *New(15, USD).(*money), *result.(*money))
+}
+
+func Test_SumTimes(t *testing.T) {
+	var fiveBucks, tenFrancs Expression = New(5, USD), New(10, CHF)
+	bank := NewBank()
+	bank.addRate(CHF, USD, 2)
+	sum := NewSum(fiveBucks, tenFrancs).Times(2)
+	result := bank.reduce(sum, "USD")
+	assert.Equal(t, *New(20, USD).(*money), *result.(*money))
+}
+
+// func Test_5ドル足す5ドルはMoney(t *testing.T) {
+// 	sum := New(5, USD).Plus(New(5, USD))
+// 	_, ok := sum.(Money)
+// 	t.Logf("sum type is %T\n", sum)
+// 	assert.True(t, ok)
+// }
